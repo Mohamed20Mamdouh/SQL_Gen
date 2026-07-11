@@ -8,6 +8,25 @@ API_KEY = "secret123"
 # --- Streamlit UI ---
 st.set_page_config(page_title="Text-to-SQL Generator", layout="wide")
 st.title("📝 Text-to-SQL Generator")
+st.markdown("""
+    <style>
+    html, body, [class*="css"], [class*="st-"] {
+        font-size: 18px !important;
+    }
+    
+    .stButton>button {
+        font-weight: bold !important;
+        font-size: 20px !important;
+        padding: 10px 24px !important;
+        border-radius: 8px !important;
+        transition: 0.3s;
+    }
+    
+    .stButton>button:hover {
+        transform: scale(1.02);
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 st.markdown("""
 Enter your **database schema** and a **natural language query**.  
