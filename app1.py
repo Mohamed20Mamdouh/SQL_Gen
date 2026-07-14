@@ -42,7 +42,7 @@ if st.button("Generate SQL"):
                         {"role": "system", "content": "You are an expert SQL assistant. Generate clean SQL and a brief explanation."},
                         {"role": "user", "content": f"Schema: {user_schema} \n Query: {user_input}"}
                     ],
-                    model="llama3-70b-8192",
+                    model="llama-3.1-70b-versatile",
                 )
                 
                 response_text = chat_completion.choices[0].message.content
