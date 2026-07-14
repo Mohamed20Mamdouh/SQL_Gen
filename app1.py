@@ -1,49 +1,31 @@
 import streamlit as st
-import requests
-
+from groq import Groq
 # --- Configuration ---
-API_URL = "https://judgingly-datebook-niece.ngrok-free.dev/generate"
-API_KEY = "secret123"
+try:
+    api_key = st.secrets["GROQ_API_KEY"]
+    client = Groq(api_key=api_key)
+except Exception as e:
+    st.error("API Key not found. Please set GROQ_API_KEY in Streamlit secrets.")
+    st.stop()
 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Text-to-SQL Generator", layout="wide")
 st.title("📝 Text-to-SQL Generator")
+
 st.markdown("""
     <style>
-    html, body, [class*="css"], [class*="st-"] {
-        font-size: 18px !important;
-    }
-    
+    html, body, [class*="css"], [class*="st-"] { font-size: 18px !important; }
     .stButton>button {
         font-weight: bold !important;
         font-size: 20px !important;
         padding: 10px 24px !important;
         border-radius: 8px !important;
-        transition: 0.3s;
+        background-color: #D32F2F !important;
+        color: white !important;
     }
-    
-    .stButton>button:hover {
-        transform: scale(1.02);
-    }
+    .stButton>button:hover { transform: scale(1.02); }
     </style>
     """, unsafe_allow_html=True)
-
-st.markdown("""
-Enter your **database schema** and a **natural language query**.  
-**Example schema format:
-TABLE: orders\n
-COLUMNS:
-- order_id (PK)
-- customer_id (FK)
-- store_id (FK)
-
-TABLE: customers\n
-COLUMNS:
-- customer_id (PK)
-- first_name
-
-
-""")
 
 # --- Inputs ---
 user_schema = st.text_area("Enter your database schema here:", height=200)
@@ -53,22 +35,18 @@ if st.button("Generate SQL"):
     if not user_schema.strip() or not user_input.strip():
         st.error("Please provide both schema and query.")
     else:
-        try:
-            headers = {"Authorization": f"Bearer {API_KEY}"}
-            payload = {"user_schema": user_schema, "user_input": user_input}
-            response = requests.post(API_URL, json=payload, headers=headers, timeout=60)
-            
-            if response.status_code == 200:
-                data = response.json()
-                sql_query = data["response"]["sql_query"]
-                explanation = data["response"]["explanation"]
-
-                st.subheader("Generated SQL Query")
-                st.code(sql_query, language="sql")
-
-                st.subheader("Explanation")
-                st.write(explanation)
-            else:
-                st.error(f"Error {response.status_code}: {response.text}")
-        except Exception as e:
-            st.error(f"Request failed: {str(e)}")
+        with st.spinner("Generating..."):
+            try:
+                chat_completion = client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "You are an expert SQL assistant. Generate clean SQL and a brief explanation."},
+                        {"role": "user", "content": f"Schema: {user_schema} \n Query: {user_input}"}
+                    ],
+                    model="llama3-70b-8192",
+                )
+                
+                response_text = chat_completion.choices[0].message.content
+                st.subheader("Result")
+                st.write(response_text)
+            except Exception as e:
+                st.error(f"Request failed: {str(e)}")
