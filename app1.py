@@ -8,8 +8,8 @@ from langchain_core.documents import Document
 def get_embeddings():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-st.set_page_config(page_title="Text-to-SQL RAG", layout="wide")
-st.title("📝 Text-to-SQL Generator (RAG Powered)")
+st.set_page_config(page_title="Text-to-SQL", layout="wide")
+st.title("📝 Text to SQL Generator")
 
 user_schema = st.text_area("Enter your database schema here:", height=200)
 user_input = st.text_input("Enter your query:", "")
@@ -35,14 +35,22 @@ if st.button("Generate SQL"):
                 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
                 response = client.chat.completions.create(
                     messages=[
-                        {"role": "system", "content": "You are an expert SQL assistant. Use only the provided relevant schema to generate the SQL query."},
+                      {
+                            "role": "system", 
+                            "content": (
+                                "You are an expert SQL assistant. "
+                                "1. Only use the provided relevant schema. "
+                                "2. Output the SQL query inside a markdown code block (```sql ... ```). "
+                                "3. Provide a very brief explanation after the code block."
+                            )
+                        },
                         {"role": "user", "content": f"Relevant Schema:\n{relevant_schema}\n\nQuestion: {user_input}"}
                     ],
                     model="llama-3.1-8b-instant",
                 )
-                
-                st.subheader("Generated SQL Query")
-                st.write(response.choices[0].message.content)
+                raw_response = response.choices[0].message.content
+                st.subheader("Result")
+                st.write(raw_response)
                 
             except Exception as e:
                 st.error(f"Error: {str(e)}")
