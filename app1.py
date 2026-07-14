@@ -4,7 +4,7 @@ import json
 from pypdf import PdfReader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 def style():
     st.markdown("""
