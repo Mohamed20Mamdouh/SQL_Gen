@@ -16,7 +16,6 @@ def style():
     .stTextArea > div > div > textarea { background-color: #FFFFFF !important; border: 2px solid #1A3A5F !important; font-size: 16px !important; color: #333333 !important; }
     .stButton>button { background-color: #1A3A5F !important; color: #FFFFFF !important; font-size: 18px !important; font-weight: 600 !important; padding: 10px 25px !important; border-radius: 8px !important; width: 100%; border: none !important; }
     .stRadio label { font-weight: 400 !important; font-size: 16px !important; }
-    [data-testid="stImage"] { background-color: transparent !important; border: none !important; }
     [data-testid="column"] { flex: 0 0 auto !important; padding-right: 10px !important; }
     </style>
     """, unsafe_allow_html=True)
