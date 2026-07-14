@@ -9,9 +9,9 @@ from langchain_core.documents import Document
 def style():
     st.markdown("""
     <style>
-    .stApp { background-color: #F0F8FF; font-family: 'Segoe UI', sans-serif; }
+    .stApp { background-color: #1F456E; font-family: 'Segoe UI', sans-serif; }
     h1 { color: #0078D4; font-weight: bold; }
-    .stButton>button { background-color: #1F456E; color: Aegean; border-radius: 5px; }
+    .stButton>button { background-color: #F0F8FF; color: Alice Blue; border-radius: 8px; }
     .stRadio label { font-weight: bold; color: #0078D4; }
     </style>
     """, unsafe_allow_html=True)
