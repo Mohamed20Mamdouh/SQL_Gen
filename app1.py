@@ -9,16 +9,15 @@ from langchain_core.documents import Document
 def style():
     st.markdown("""
     <style>
-    .stApp { background-color: #F0F8FF; max-width: 800px; margin: 0 auto; }
-    h1 { color: #1A3A5F; font-weight: 800; text-align: center; margin-bottom: 30px; } 
-    label { font-size: 18px !important; font-weight: 600 !important; color: #1A3A5F !important; } 
-    .stTextInput > div > div > input, 
-    .stTextArea > div > div > textarea { background-color: #FFFFFF !important; border: 2px solid #1A3A5F !important; font-size: 16px !important; color: #333333 !important; }
-    .stButton>button { background-color: #1A3A5F !important; color: #FFFFFF !important; font-size: 18px !important; font-weight: 600 !important; padding: 10px 25px !important; border-radius: 8px !important; width: 100%; border: none !important; }
-    .stRadio label { font-weight: 400 !important; font-size: 16px !important; }
+        .stApp { background-color: #F0F8FF; max-width: 800px; margin: 0 auto; }
+        h1 { color: #1A3A5F; text-align: left; }
+        label { font-size: 18px !important; color: #1A3A5F !important; }
+        .stTextInput input, .stTextArea textarea { border: 2px solid #1A3A5F !important; }
+        .stButton button { background: #1A3A5F !important; color: white !important; width: 100%; }
     </style>
-    """, unsafe_allow_html=True)
-    st.markdown("<h1 style='text-align: center;'>🗄️ SQL Intelligent Assistant</h1>", unsafe_allow_html=True)
+
+<h1>🗄️ SQL Intelligent Assistant</h1>
+""", unsafe_allow_html=True)
 style()
 
 @st.cache_resource
