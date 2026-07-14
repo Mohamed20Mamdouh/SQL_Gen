@@ -2,7 +2,7 @@ import streamlit as st
 from groq import Groq
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 @st.cache_resource
 def get_embeddings():
