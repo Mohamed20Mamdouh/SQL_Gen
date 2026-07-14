@@ -38,7 +38,7 @@ if st.button("Generate SQL"):
                         {"role": "system", "content": "You are an expert SQL assistant. Use only the provided relevant schema to generate the SQL query."},
                         {"role": "user", "content": f"Relevant Schema:\n{relevant_schema}\n\nQuestion: {user_input}"}
                     ],
-                    model="llama-3.1-70b-versatile",
+                    model="llama-3.1-8b-instant",
                 )
                 
                 st.subheader("Generated SQL Query")
