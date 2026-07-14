@@ -10,17 +10,12 @@ def style():
     st.markdown("""
     <style>
     .stApp { background-color: #F0F8FF; max-width: 800px; margin: 0 auto; }
-    h1 { color: #1A3A5F; font-weight: 800; text-align: center; margin-bottom: 30px; }
-    label { font-size: 18px !important; font-weight: 600 !important; color: #1A3A5F !important; }
+    h1 { color: #1A3A5F; font-weight: 800; text-align: center; margin-bottom: 30px; } 
+    label { font-size: 18px !important; font-weight: 600 !important; color: #1A3A5F !important; } 
     .stTextInput > div > div > input, 
     .stTextArea > div > div > textarea { background-color: #FFFFFF !important; border: 2px solid #1A3A5F !important; font-size: 16px !important; color: #333333 !important; }
     .stButton>button { background-color: #1A3A5F !important; color: #FFFFFF !important; font-size: 18px !important; font-weight: 600 !important; padding: 10px 25px !important; border-radius: 8px !important; width: 100%; border: none !important; }
     .stRadio label { font-weight: 400 !important; font-size: 16px !important; }
-    [data-testid="stImage"] {
-        background-color: transparent !important;
-        border: none !important;
-    }
-    [data-testid="column"] { flex: 0 0 auto !important; padding-right: 10px !important; }
     </style>
     """, unsafe_allow_html=True)
 style()
@@ -29,7 +24,7 @@ col1, col2 = st.columns([1, 6])
 with col1:
     st.image("sql_logo.png", width=80) 
 with col2:
-    st.title("SQL Intelligent Assistant")
+    st.title("🗄️ SQL Intelligent Assistant")
 
 @st.cache_resource
 def get_embeddings():
