@@ -10,7 +10,6 @@ def style():
     st.markdown("""
     <style>
     .stApp { background-color: #F0F8FF; max-width: 800px; margin: 0 auto; }
-    <h1 style='text-align: center;'>🗄️ SQL Intelligent Assistant</h1>
     h1 { color: #1A3A5F; font-weight: 800; text-align: center; margin-bottom: 30px; } 
     label { font-size: 18px !important; font-weight: 600 !important; color: #1A3A5F !important; } 
     .stTextInput > div > div > input, 
@@ -19,6 +18,7 @@ def style():
     .stRadio label { font-weight: 400 !important; font-size: 16px !important; }
     </style>
     """, unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>🗄️ SQL Intelligent Assistant</h1>", unsafe_allow_html=True)
 style()
 
 @st.cache_resource
