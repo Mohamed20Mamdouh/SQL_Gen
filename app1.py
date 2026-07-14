@@ -11,7 +11,7 @@ def style():
     <style>
     .stApp { background-color: #F0F8FF; font-family: 'Segoe UI', sans-serif; }
     h1 { color: #0078D4; font-weight: bold; }
-    .stButton>button { background-color: #0078D4; color: Black; border-radius: 5px; }
+    .stButton>button { background-color: #21e6fa; color: Black; border-radius: 5px; }
     .stRadio label { font-weight: bold; color: #0078D4; }
     </style>
     """, unsafe_allow_html=True)
