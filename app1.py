@@ -20,7 +20,7 @@ def css():
     </style>
     """, unsafe_allow_html=True)
 
-local_css()
+css()
 
 sql_prompt_template = PromptTemplate(
     input_variables=["schema", "query"],
