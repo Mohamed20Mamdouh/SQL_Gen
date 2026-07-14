@@ -10,8 +10,12 @@ def style():
     st.markdown("""
     <style>
     .stApp { background-color: #1F456E; font-family: 'Segoe UI', sans-serif; }
-    h1 { color: #0078D4; font-weight: bold; }
-    .stButton>button { background-color: #F0F8FF; color: Alice Blue; border-radius: 8px; }
+    h1 { color: #FFFFFF; font-weight: bold; }
+    .stTextInput > div > div > input, .stTextArea > div > div > textarea {
+        background-color: #E0E7FF;
+        color: #000000;
+    }
+    .stButton>button { background-color: #0078D4; color: white; border-radius: 8px; }
     .stRadio label { font-weight: bold; color: #0078D4; }
     </style>
     """, unsafe_allow_html=True)
