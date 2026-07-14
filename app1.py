@@ -1,62 +1,71 @@
 import streamlit as st
 from groq import Groq
 import json
-import csv
-from datetime import datetime
-from langchain_core.prompts import PromptTemplate
+from pypdf import PdfReader
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain.docstore.document import Document
 
-#CSS Style
-def css():
+def style():
     st.markdown("""
     <style>
-    .stApp {
-        background-color: #f0f2f6;
-        font-family: 'Arial', sans-serif;
-    }
-    .stMarkdown, .stTextInput, .stTextArea {
-        font-size: 24px !important;
-    }
-    h1 { color: #1e3a8a; }
+    .stApp { background-color: #F8F9FA; font-family: 'Segoe UI', sans-serif; }
+    h1 { color: #0078D4; font-weight: bold; }
+    .stButton>button { background-color: #0078D4; color: white; border-radius: 5px; }
     </style>
     """, unsafe_allow_html=True)
 
-css()
+style()
 
-sql_prompt_template = PromptTemplate(
-    input_variables=["schema", "query"],
-    template="You are an SQL expert. Schema: {schema}. Query: {query}. Respond ONLY in JSON: {'sql_query': '...', 'explanation': '...'}"
-)
+col1, col2 = st.columns([1, 6])
+with col1:
+    st.image("sql_logo.png", width=80) 
+with col2:
+    st.title("SQL Server Intelligent Assistant")
 
-#Evaluation
-def evaluate_model(generated_sql, ground_truth):
-    return 1 if generated_sql.strip().lower() == ground_truth.strip().lower() else 0
+@st.cache_resource
+def get_embeddings():
+    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-st.title("🚀 SQL Generation")
+def read_file(file):
+    if file.type == "application/pdf":
+        reader = PdfReader(file)
+        return "\n".join([page.extract_text() for page in reader.pages])
+    return file.read().decode("utf-8")
 
-tab1, tab2 = st.tabs(["Generator", "Evaluation"])
+uploaded_file = st.file_uploader("Upload Schema File (.txt or .pdf)", type=['txt', 'pdf'])
+user_input = st.text_input("Enter your SQL query request:")
 
-with tab1:
-    user_schema = st.text_area("Schema:", height=150)
-    user_input = st.text_input("Query:")
-    
-    if st.button("Generate"):
-        prompt = sql_prompt_template.format(schema=user_schema, query=user_input)
-        client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-        response = client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}],
-            model="llama-3.1-70b-versatile",
-            response_format={"type": "json_object"}
-        )
-        result = json.loads(response.choices[0].message.content)
-        st.code(result["sql_query"], language="sql")
-        st.session_state['last_sql'] = result["sql_query"]
-
-with tab2:
-    st.subheader("Model Evaluation")
-    ground_truth = st.text_area("Enter expected SQL for testing:")
-    if st.button("Run Accuracy Test"):
-        if 'last_sql' in st.session_state:
-            score = evaluate_model(st.session_state['last_sql'], ground_truth)
-            st.metric("Accuracy Score", f"{score * 100}%")
-        else:
-            st.warning("Generate an SQL first!")
+if st.button("Generate SQL"):
+    if not uploaded_file or not user_input:
+        st.warning("Please upload a file and enter a query.")
+    else:
+        with st.spinner("Processing..."):
+            try:
+                schema_text = read_file(uploaded_file)
+                
+                embeddings = get_embeddings()
+                chunks = [f"CREATE TABLE {c.strip()}" for c in schema_text.split("CREATE TABLE") if c.strip()]
+                docs = [Document(page_content=c) for c in chunks]
+                vectorstore = FAISS.from_documents(docs, embeddings)
+                
+                relevant_schema = "\n".join([doc.page_content for doc in vectorstore.similarity_search(user_input, k=2)])
+                
+                client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+                prompt = f"Schema: {relevant_schema}\n\nQuery: {user_input}\nRespond ONLY in JSON format with 'sql_query' and 'explanation'."
+                
+                response = client.chat.completions.create(
+                    messages=[{"role": "user", "content": prompt}],
+                    model="llama-3.1-70b-versatile",
+                    response_format={"type": "json_object"}
+                )
+                
+                result = json.loads(response.choices[0].message.content)
+                
+                st.subheader("Generated SQL")
+                st.code(result["sql_query"], language="sql")
+                st.subheader("Explanation")
+                st.write(result["explanation"])
+                
+            except Exception as e:
+                st.error(f"Error: {e}")
