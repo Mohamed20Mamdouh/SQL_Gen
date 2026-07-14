@@ -10,6 +10,7 @@ def style():
     st.markdown("""
     <style>
     .stApp { background-color: #F0F8FF; max-width: 800px; margin: 0 auto; }
+    <h1 style='text-align: center;'>🗄️ SQL Intelligent Assistant</h1>
     h1 { color: #1A3A5F; font-weight: 800; text-align: center; margin-bottom: 30px; } 
     label { font-size: 18px !important; font-weight: 600 !important; color: #1A3A5F !important; } 
     .stTextInput > div > div > input, 
@@ -19,12 +20,6 @@ def style():
     </style>
     """, unsafe_allow_html=True)
 style()
-
-col1, col2 = st.columns([1, 6])
-with col1:
-    st.image("sql_logo.png", width=80) 
-with col2:
-    st.title("🗄️ SQL Intelligent Assistant")
 
 @st.cache_resource
 def get_embeddings():
