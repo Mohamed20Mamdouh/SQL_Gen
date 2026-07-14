@@ -11,7 +11,7 @@ def style():
     <style>
     .stApp { background-color: #F0F8FF; font-family: 'Segoe UI', sans-serif; }
     h1 { color: #0078D4; font-weight: bold; }
-    .stButton>button { background-color: #0078D4; color: white; border-radius: 5px; }
+    .stButton>button { background-color: #1F456E; color: Aegean; border-radius: 5px; }
     .stRadio label { font-weight: bold; color: #0078D4; }
     </style>
     """, unsafe_allow_html=True)
@@ -42,7 +42,7 @@ user_input = st.text_input("Enter your SQL query request:")
 
 if st.button("Generate SQL"):
     if not user_input:
-        st.warning("Please enter your SQL query request.")
+        st.warning("Please Enter Your SQL Query: ")
     else:
         with st.spinner("Processing..."):
             try:
@@ -61,7 +61,7 @@ if st.button("Generate SQL"):
                 
                 response = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
-                    model="llama-3.1-70b-versatile",
+                    model="Llama-3.1-405B-Reasoning",
                     response_format={"type": "json_object"}
                 )
                 
