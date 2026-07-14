@@ -10,9 +10,9 @@ def style():
     st.markdown("""
     <style>
     .stApp { background-color: #F0F8FF; font-family: 'Segoe UI', sans-serif; }
-    h1 { color: #0078D4; font-weight: bold; }
-    .stButton>button { background-color: #21e6fa; color: Black; border-radius: 5px; }
-    .stRadio label { font-weight: bold; color: #0078D4; }
+    h1 { color: Black; font-weight: bold; }
+    .stButton>button { background-color: #21e6fa; color: Black; border-radius: 8px; }
+    .stRadio label { font-weight: bold; color: Black }
     </style>
     """, unsafe_allow_html=True)
 
