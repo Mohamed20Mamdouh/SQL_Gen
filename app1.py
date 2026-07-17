@@ -57,7 +57,7 @@ if st.button("Generate SQL"):
                 
                 response = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
-                    model="llama-3.1-8b",
+                    model="llama-3.1-8b-instant",
                     response_format={"type": "json_object"}
                 )
                 
