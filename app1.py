@@ -5,25 +5,25 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 
-st.title("🗄️ SQL Intelligent Assistant")
+st.title("🗄️ SQL Assistant")
 
+#embedding
 @st.cache_resource
 def get_embeddings():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
+    
 @st.cache_resource(show_spinner=False)
 def build_vectorstore(schema_text):
     embeddings = get_embeddings()
     chunks = re.split(r'(?i)(?=CREATE\s+TABLE)', schema_text)
-    chunks = [c.strip() for c in chunks if c.strip()]
-    
+    chunks = [c.strip() for c in chunks if c.strip()] 
     if not chunks:
-        return None
-        
+        return None      
     docs = [Document(page_content=c) for c in chunks]
     vectorstore = FAISS.from_documents(docs, embeddings)
     return vectorstore
 
+#Input
 sql_dialect = st.selectbox("Select SQL Dialect:", ["PostgreSQL", "MySQL", "SQL Server", "SQLite", "Generic SQL"])
 
 schema_option = st.radio("How do you want to provide the Schema?", ("Upload .sql File", "Write Manually"))
@@ -38,6 +38,7 @@ else:
 
 user_input = st.text_input("Enter your SQL query request:")
 
+#processing
 if st.button("Generate SQL"):
     if not user_input:
         st.warning("Please Enter Your SQL Query: ")
