@@ -4,7 +4,7 @@ import json
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
-
+st.set_page_config(page_title="SQL Assistant", page_icon="🗄️")
 st.title("🗄️ SQL Assistant")
 
 #embedding
