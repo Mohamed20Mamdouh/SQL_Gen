@@ -1,28 +1,30 @@
 import streamlit as st
 from groq import Groq
 import json
-from pypdf import PdfReader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 
-def style():
-    st.markdown("""
-    <style>
-        .stApp { background-color: #F0F8FF; max-width: 800px; margin: 0 auto; }
-        h1 { color: #1A3A5F; text-align: left; }
-        label { font-size: 18px !important; color: #1A3A5F !important; }
-        .stTextInput input, .stTextArea textarea { border: 2px solid #1A3A5F !important; }
-        .stButton button { background: #1A3A5F !important; color: white !important; width: 100%; }
-    </style>
-
-<h1>🗄️ SQL Intelligent Assistant</h1>
-""", unsafe_allow_html=True)
-style()
+st.title("🗄️ SQL Intelligent Assistant")
 
 @st.cache_resource
 def get_embeddings():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+@st.cache_resource(show_spinner=False)
+def build_vectorstore(schema_text):
+    embeddings = get_embeddings()
+    chunks = re.split(r'(?i)(?=CREATE\s+TABLE)', schema_text)
+    chunks = [c.strip() for c in chunks if c.strip()]
+    
+    if not chunks:
+        return None
+        
+    docs = [Document(page_content=c) for c in chunks]
+    vectorstore = FAISS.from_documents(docs, embeddings)
+    return vectorstore
+
+sql_dialect = st.selectbox("Select SQL Dialect:", ["PostgreSQL", "MySQL", "SQL Server", "SQLite", "Generic SQL"])
 
 schema_option = st.radio("How do you want to provide the Schema?", ("Upload .sql File", "Write Manually"))
 schema_text = ""
@@ -44,29 +46,43 @@ if st.button("Generate SQL"):
             try:
                 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
                 
+                system_prompt = f"""You are an expert Database Administrator. 
+                Write precise and highly optimized {sql_dialect} queries. 
+                Respond ONLY in valid JSON format with exactly two keys: 'sql_query' and 'explanation'."""
+
+                prompt = ""
                 if schema_text.strip():
-                    embeddings = get_embeddings()
-                    chunks = [f"CREATE TABLE {c.strip()}" for c in schema_text.split("CREATE TABLE") if c.strip()]
-                    docs = [Document(page_content=c) for c in chunks]
-                    vectorstore = FAISS.from_documents(docs, embeddings)
-                    relevant_schema = "\n".join([doc.page_content for doc in vectorstore.similarity_search(user_input, k=2)])
-                    
-                    prompt = f"Schema: {relevant_schema}\n\nQuery: {user_input}\nRespond ONLY in JSON format with 'sql_query' and 'explanation'."
+                    vectorstore = build_vectorstore(schema_text)
+                    if vectorstore:
+                        relevant_docs = vectorstore.similarity_search(user_input, k=2)
+                        relevant_schema = "\n\n".join([doc.page_content for doc in relevant_docs])
+                        
+                        prompt = f"Schema:\n{relevant_schema}\n\nUser Query: {user_input}\n\nBased ONLY on the schema above, generate the {sql_dialect} query."
+                    else:
+                        prompt = f"User Query: {user_input}\nGenerate a standard {sql_dialect} query."
                 else:
-                    prompt = f"No Schema provided. Generate a standard SQL query for: {user_input}\nRespond ONLY in JSON format with 'sql_query' and 'explanation'."
+                    prompt = f"No Schema provided. Generate a standard {sql_dialect} query for: {user_input}"
                 
                 response = client.chat.completions.create(
-                    messages=[{"role": "user", "content": prompt}],
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt}
+                    ],
                     model="llama-3.1-8b-instant",
                     response_format={"type": "json_object"}
-                )
-                
-                result = json.loads(response.choices[0].message.content)
+                )                
+                raw_content = response.choices[0].message.content.strip()
+                if raw_content.startswith("```json"):
+                    raw_content = raw_content[7:-3].strip()
+                elif raw_content.startswith("```"):
+                    raw_content = raw_content[3:-3].strip()
+                    
+                result = json.loads(raw_content)
                 
                 st.subheader("Generated SQL")
-                st.code(result["sql_query"], language="sql")
+                st.code(result.get("sql_query", "-- No SQL generated"), language="sql")
                 st.subheader("Explanation")
-                st.write(result.get("explanation", ""))
+                st.write(result.get("explanation", "No explanation provided."))
                 
             except Exception as e:
                 st.error(f"Error: {e}")
