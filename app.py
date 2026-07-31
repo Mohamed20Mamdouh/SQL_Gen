@@ -127,7 +127,7 @@ Respond ONLY in valid JSON format with the following keys:
                     if is_arabic:
                         st.markdown("""
                         <div dir="rtl" style="background-color: #ffeaea; color: #d32f2f; padding: 15px; border-radius: 8px; text-align: right; border: 1px solid #ffcdd2; margin-bottom: 15px;">
-                            <strong>خطأ:</strong> عفواً، هذا السؤال خارج نطاق قواعد البيانات. يرجى طرح أسئلة متعلقة بالـ Schema المتاحة أو الـ SQL فقط.
+                            عفواً، هذا السؤال خارج نطاق قواعد البيانات. يرجى طرح أسئلة متعلقة بالـ Schema المتاحة أو الـ SQL فقط.
                         </div>
                         """, unsafe_allow_html=True)
                     else:
