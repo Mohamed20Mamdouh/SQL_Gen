@@ -27,7 +27,7 @@ def style():
     .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
     </style>
     
-    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true" width="40" style="vertical-align: middle;">SQLSync</h1>
+    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true" width="90" style="vertical-align: middle;">SQLSync</h1>
     """, unsafe_allow_html=True) 
 
 style()
