@@ -26,6 +26,9 @@ def style():
     .stTextInput input:focus, .stTextArea textarea:focus { border-color: #D35400 !important; box-shadow: 0 4px 15px rgba(211, 84, 0, 0.2) !important; }
     .stButton button { background: linear-gradient(135deg, #D35400, #E67E22) !important; color: white !important; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; padding: 10px; box-shadow: 0 4px 10px rgba(211, 84, 0, 0.2); transition: 0.3s; }
     .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
+    .stChatMessage [data-testid="stMarkdownContainer"] { direction: rtl; text-align: right; }
+    .stChatMessage [data-testid="stCodeBlock"], .stChatMessage pre { direction: ltr !important; text-align: left !important; }
+    .stChatMessage code { direction: ltr !important; unicode-bidi: isolate; }
     </style>
     
     <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true" width="100" style="vertical-align: middle;">SQLSync</h1>
