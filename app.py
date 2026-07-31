@@ -162,10 +162,17 @@ if "last_sql" in st.session_state:
                     Query: 
                     {st.session_state["last_sql"]}
                     
+                    User's Original Request: 
+                    {user_input}
+                    
                     Please provide a brief, professional analysis covering:
                     1. Potential performance bottlenecks.
                     2. Suggested code modifications for better execution speed.
                     3. Recommended columns for indexing to optimize this specific query.
+                    
+                    IMPORTANT INSTRUCTION: 
+                    You MUST write the entire analysis in the EXACT SAME LANGUAGE as the "User's Original Request". 
+                    If the User's Original Request is in Arabic, your analysis MUST be completely in Arabic (except for SQL keywords or column names).
                     """
                     
                     opt_response = client.chat.completions.create(
