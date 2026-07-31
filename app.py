@@ -125,7 +125,11 @@ Respond ONLY in valid JSON format with the following keys:
                 if "-- ERROR: OUT_OF_SCOPE" in result.get("sql_query", ""):
                     is_arabic = any("\u0600" <= c <= "\u06FF" for c in user_input)                    
                     if is_arabic:
-                        st.error("عفواً، هذا السؤال خارج نطاق قواعد البيانات. يرجى طرح أسئلة متعلقة بالـ Schema المتاحة أو الـ SQL فقط.")
+                        st.markdown("""
+                        <div dir="rtl" style="background-color: #ffeaea; color: #d32f2f; padding: 15px; border-radius: 8px; text-align: right; border: 1px solid #ffcdd2; margin-bottom: 15px;">
+                            <strong>خطأ:</strong> عفواً، هذا السؤال خارج نطاق قواعد البيانات. يرجى طرح أسئلة متعلقة بالـ Schema المتاحة أو الـ SQL فقط.
+                        </div>
+                        """, unsafe_allow_html=True)
                     else:
                         st.error("Sorry, this question is out of database scope. Please ask questions related to the provided Schema or SQL only.")
                     if "last_sql" in st.session_state:
