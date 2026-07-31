@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import sqlite3
+import time
 import pandas as pd
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -19,8 +20,8 @@ def style():
     }
     
     .stApp { background-color: #FAF8F5; max-width: 800px; margin: 0 auto; }
-    h1 { color: #D35400; display: flex; justify-content: center; align-items: center; gap: 12px; font-weight: 700; }
-    label { font-size: 32px !important; color: #5D4037 !important; font-weight: 600 !important; }
+    h1 { color: #D35400; display: flex; justify-content: center; align-items: center; gap: 12px; font-weight: 700; margin-bottom: 40px; }
+    label { font-size: 20px !important; color: #5D4037 !important; font-weight: 600 !important; }
     .stTextInput input, .stTextArea textarea { background-color: #FFFFFF !important; border: 2px solid #F39C12 !important; border-radius: 12px !important; padding: 12px !important; box-shadow: 0 4px 12px rgba(211, 84, 0, 0.08) !important; transition: all 0.3s ease-in-out !important; }
     .stTextInput input:focus, .stTextArea textarea:focus { border-color: #D35400 !important; box-shadow: 0 4px 15px rgba(211, 84, 0, 0.2) !important; }
     .stButton button { background: linear-gradient(135deg, #D35400, #E67E22) !important; color: white !important; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; padding: 10px; box-shadow: 0 4px 10px rgba(211, 84, 0, 0.2); transition: 0.3s; }
@@ -32,18 +33,23 @@ def style():
 
 style()
 
+def stream_data(text):
+    for word in text.split(" "):
+        yield word + " "
+        time.sleep(0.04)
+        
 @st.cache_resource
 def get_embeddings():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-col1, col2 = st.columns([2, 1])
-with col1:
-    schema_option = st.radio("How do you want to provide the Schema?", ("Upload .sql", "Text"))
-with col2:
-    sql_dialect = st.selectbox("SQL Dialect:", ["MySQL", "PostgreSQL", "SQLite", "SQL Server"])
+with st.container(border=True):
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        schema_option = st.radio("How do you want to provide the Schema?", ("Upload .sql", "Text"))
+    with col2:
+        sql_dialect = st.selectbox("SQL Dialect:", ["MySQL", "PostgreSQL", "SQLite", "SQL Server"])    
 
 schema_text = ""
-
 if schema_option == "Upload .sql":
     uploaded_file = st.file_uploader("Upload your .sql file:", type=['sql', 'txt'])
     if uploaded_file:
@@ -109,7 +115,7 @@ if "last_sql" in st.session_state:
     st.code(st.session_state["last_sql"], language="sql")
     
     st.subheader("💡 Explanation")
-    st.write(st.session_state["last_explanation"])
+    st.write_stream(stream_data(st.session_state["last_explanation"]))
     
     file_extension = "sql"
     export_filename = f"query_output.{sql_dialect.lower().replace(' ', '_')}.{file_extension}"
@@ -180,7 +186,7 @@ with st.expander("💬 SQLSync Chat", expanded=False):
     if chat_input := st.chat_input("Discuss the code or schema with the assistant..."):
         st.session_state.messages.append({"role": "user", "content": chat_input})
         with st.chat_message("user"):
-            st.markdown(chat_input)
+            st.write_stream(stream_data(assistant_reply))
 
         with st.spinner("Generating response..."):
             try:
@@ -199,7 +205,7 @@ with st.expander("💬 SQLSync Chat", expanded=False):
                 assistant_reply = chat_response.choices[0].message.content
                 
                 st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
-                with st.chat_message("assistant"):
+                with st.chat_message("assistant", avatar="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true"):
                     st.markdown(assistant_reply)
             except Exception as e:
                 st.error(f"Chat Error: {e}")
