@@ -77,6 +77,10 @@ if st.button("Generate SQL"):
                     prompt = f"""You are an advanced Text-to-SQL expert specialized in {sql_dialect}. 
 Given the following database schema, write an accurate, optimized, and syntax-compliant SQL query for {sql_dialect}.
 
+IMPORTANT INSTRUCTIONS:
+- Generate ONLY what is explicitly requested.
+- DO NOT add extra clauses like ORDER BY, WHERE, or LIMIT unless the user specifically asks for them.
+
 Database Schema:
 {relevant_schema}
 
