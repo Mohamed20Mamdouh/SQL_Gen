@@ -80,6 +80,7 @@ Given the following database schema, write an accurate, optimized, and syntax-co
 IMPORTANT INSTRUCTIONS:
 - Generate ONLY what is explicitly requested.
 - DO NOT add extra clauses like ORDER BY, WHERE, or LIMIT unless the user specifically asks for them.
+- LANGUAGE MATCH: You MUST write the "explanation" in the EXACT SAME LANGUAGE as the User Request. If the User Request is in Arabic, the explanation must be in Arabic. If it is in English, the explanation must be in English.
 
 Database Schema:
 {relevant_schema}
@@ -197,7 +198,7 @@ with st.expander("💬 SQLSync Chat", expanded=False):
                 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
                 
                 chat_context = f"Current Schema:\n{schema_text}\n\nCurrent Last SQL Query:\n{st.session_state.get('last_sql', 'None')}\n\n"
-                messages_payload = [{"role": "system", "content": f"You are an expert database assistant. {chat_context}"}]
+                messages_payload = [{"role": "system", "content": f"You are an expert database assistant. Always reply in the exact same language the user uses (e.g., if the user asks in Arabic, reply in Arabic; if in English, reply in English). {chat_context}"}]
                 for m in st.session_state.messages:
                     messages_payload.append({"role": m["role"], "content": m["content"]})
                 
