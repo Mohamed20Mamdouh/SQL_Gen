@@ -189,8 +189,9 @@ with st.expander("💬 SQLSync Chat", expanded=False):
 
     if chat_input := st.chat_input("Discuss the code or schema with the assistant..."):
         st.session_state.messages.append({"role": "user", "content": chat_input})
+        
         with st.chat_message("user"):
-            st.write_stream(stream_data(assistant_reply))
+            st.markdown(chat_input)
 
         with st.spinner("Generating response..."):
             try:
@@ -206,10 +207,11 @@ with st.expander("💬 SQLSync Chat", expanded=False):
                     model="llama-3.3-70b-versatile",
                     temperature=0.2
                 )
-                assistant_reply = chat_response.choices[0].message.content
                 
-                st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+                assistant_reply = chat_response.choices[0].message.content
+                st.session_state.messages.append({"role": "assistant", "content": assistant_reply})                
                 with st.chat_message("assistant", avatar="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true"):
-                    st.markdown(assistant_reply)
+                    st.write_stream(stream_data(assistant_reply))
+                    
             except Exception as e:
                 st.error(f"Chat Error: {e}")
