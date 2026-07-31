@@ -13,7 +13,11 @@ def style():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
-    html, body, [class*="css"], *, .stApp { font-family: 'Fira Code', monospace !important; }
+    
+    code, pre, [data-testid="stCodeBlock"] { 
+        font-family: 'Fira Code', monospace !important; 
+    }
+    
     .stApp { background-color: #FAF8F5; max-width: 800px; margin: 0 auto; }
     h1 { color: #D35400; text-align: left; display: flex; align-items: center; gap: 12px; font-weight: 700; }
     label { font-size: 32px !important; color: #5D4037 !important; font-weight: 600 !important; }
@@ -23,8 +27,9 @@ def style():
     .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
     </style>
     
-    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Title_Test.jpg?raw=true" width="40" style="vertical-align: middle;">SQLSync</h1>
+    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true" width="40" style="vertical-align: middle;">SQLSync</h1>
     """, unsafe_allow_html=True) 
+
 style()
 
 @st.cache_resource
