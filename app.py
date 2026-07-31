@@ -7,21 +7,24 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from groq import Groq
 
-def style():
-    st.set_page_config(page_title="SQLSync", page_icon="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head.png?raw=true")
-    st.markdown("""
-    <link href="https://fonts.google.com/specimen/Fira+Code" rel="stylesheet">
-    <style>
-        .stApp { background-color: #FAF8F5; max-width: 800px; margin: 0 auto; font-family: 'Cairo', Medium 500; }
-        h1 { color: #D35400; text-align: left; display: flex; align-items: center; gap: 12px; font-weight: 700; }
-        label { font-size: 32px !important; color: #5D4037 !important; font-weight: 600 !important; }
-        .stTextInput input, .stTextArea textarea { background-color: #FFFFFF !important; border: 2px solid #F39C12 !important; border-radius: 12px !important; padding: 12px !important; box-shadow: 0 4px 12px rgba(211, 84, 0, 0.08) !important; transition: all 0.3s ease-in-out !important; }
-        .stTextInput input:focus, .stTextArea textarea:focus { border-color: #D35400 !important; box-shadow: 0 4px 15px rgba(211, 84, 0, 0.2) !important; }
-        .stButton button { background: linear-gradient(135deg, #D35400, #E67E22) !important; color: white !important; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; padding: 10px; box-shadow: 0 4px 10px rgba(211, 84, 0, 0.2); transition: 0.3s; }
-        .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
-    </style>
+st.set_page_config( page_title="SQLSync", page_icon="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true")
 
-<h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Title.png?raw=true" width="40" style="vertical-align: middle;">SQLSync</h1>""", unsafe_allow_html=True)
+def style():
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+    html, body, [class*="css"], *, .stApp { font-family: 'Fira Code', monospace !important; }
+    .stApp { background-color: #FAF8F5; max-width: 800px; margin: 0 auto; }
+    h1 { color: #D35400; text-align: left; display: flex; align-items: center; gap: 12px; font-weight: 700; }
+    label { font-size: 32px !important; color: #5D4037 !important; font-weight: 600 !important; }
+    .stTextInput input, .stTextArea textarea { background-color: #FFFFFF !important; border: 2px solid #F39C12 !important; border-radius: 12px !important; padding: 12px !important; box-shadow: 0 4px 12px rgba(211, 84, 0, 0.08) !important; transition: all 0.3s ease-in-out !important; }
+    .stTextInput input:focus, .stTextArea textarea:focus { border-color: #D35400 !important; box-shadow: 0 4px 15px rgba(211, 84, 0, 0.2) !important; }
+    .stButton button { background: linear-gradient(135deg, #D35400, #E67E22) !important; color: white !important; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; padding: 10px; box-shadow: 0 4px 10px rgba(211, 84, 0, 0.2); transition: 0.3s; }
+    .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
+    </style>
+    
+    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Title_Test.jpg?raw=true" width="40" style="vertical-align: middle;">SQLSync</h1>
+    """, unsafe_allow_html=True) 
 style()
 
 @st.cache_resource
@@ -36,7 +39,7 @@ with col2:
 
 schema_text = ""
 
-if schema_option == "Upload .sql File":
+if schema_option == "Upload .sql":
     uploaded_file = st.file_uploader("Upload your .sql file:", type=['sql', 'txt'])
     if uploaded_file:
         schema_text = uploaded_file.read().decode("utf-8")
