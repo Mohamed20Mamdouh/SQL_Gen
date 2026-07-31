@@ -80,7 +80,6 @@ Given the following database schema, write an accurate, optimized, and syntax-co
 IMPORTANT INSTRUCTIONS:
 - Generate ONLY what is explicitly requested.
 - DO NOT add extra clauses like ORDER BY, WHERE, or LIMIT unless the user specifically asks for them.
-- LANGUAGE MATCH: You MUST write the "explanation" in the EXACT SAME LANGUAGE as the User Request. If the User Request is in Arabic, the explanation must be in Arabic. If it is in English, the explanation must be in English.
 
 Database Schema:
 {relevant_schema}
@@ -89,7 +88,7 @@ User Request: {user_input}
 
 Respond ONLY in valid JSON format with the following keys:
 - "sql_query": The generated SQL query string.
-- "explanation": A brief explanation of how the query works."""
+- "explanation": You MUST write this explanation in the EXACT SAME LANGUAGE as the User Request. If the user writes in Arabic, this MUST be in Arabic."""
                 else:
                     prompt = f"""You are an advanced Text-to-SQL expert specialized in {sql_dialect}. 
 Write a standard SQL query for {sql_dialect} based on the request:
@@ -98,7 +97,7 @@ User Request: {user_input}
 
 Respond ONLY in valid JSON format with the following keys:
 - "sql_query": The generated SQL query string.
-- "explanation": A brief explanation of how the query works."""
+- "explanation": You MUST write this explanation in the EXACT SAME LANGUAGE as the User Request. If the user writes in Arabic, this MUST be in Arabic."""
                 
                 response = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
