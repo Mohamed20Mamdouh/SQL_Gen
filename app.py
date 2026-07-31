@@ -8,7 +8,7 @@ from langchain_core.documents import Document
 from groq import Groq
 
 def style():
-    st.set_page_config(page_title="SQLSync", page_icon="https://share.gemini.google/7WvOKpjtuAcu")
+    st.set_page_config(page_title="SQLSync", page_icon="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head.png?raw=true")
     st.markdown("""
     <link href="https://fonts.google.com/specimen/Fira+Code" rel="stylesheet">
     <style>
@@ -21,7 +21,7 @@ def style():
         .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
     </style>
 
-<h1><img src="https://share.gemini.google/uSP60sKxnDi2" width="40" style="vertical-align: middle;">SQLSync</h1>""", unsafe_allow_html=True)
+<h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Title.png?raw=true" width="40" style="vertical-align: middle;">SQLSync</h1>""", unsafe_allow_html=True)
 style()
 
 @st.cache_resource
