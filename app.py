@@ -54,22 +54,23 @@ with st.container(border=True):
 
 schema_text = ""
 if schema_option == "Upload .sql":
-    uploaded_file = st.file_uploader("Upload your .sql file:", type=['sql', 'txt'])
+    uploaded_file = st.file_uploader("Upload your .sql file (Required):", type=['sql', 'txt'])
     if uploaded_file:
         schema_text = uploaded_file.read().decode("utf-8")
 else:
-    schema_text = st.text_area("Paste Your Schema Here (Optional):", height=150, placeholder="CREATE TABLE users (id INT, name VARCHAR(50));")
+    schema_text = st.text_area("Paste Your Schema Here (Required):", height=150, placeholder="CREATE TABLE users (id INT, name VARCHAR(50));")
 
 user_input = st.text_input("Enter your SQL query request:", placeholder="Prompt your query...")
 
 if st.button("Generate SQL"):
-    if not user_input:
+    if not schema_text.strip():
+        st.warning("Please provide your Database Schema (Upload a file or paste text) to proceed.")
+    elif not user_input:
         st.warning("Please Enter Your SQL Query: ")
     else:
         with st.spinner("Processing..."):
             try:
-                client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-                
+                client = Groq(api_key=st.secrets["GROQ_API_KEY"])                
                 if schema_text.strip():
                     embeddings = get_embeddings()
                     chunks = [f"CREATE TABLE {c.strip()}" for c in schema_text.split("CREATE TABLE") if c.strip()]
@@ -84,23 +85,32 @@ IMPORTANT INSTRUCTIONS:
 - Generate ONLY what is explicitly requested.
 - DO NOT add extra clauses like ORDER BY, WHERE, or LIMIT unless the user specifically asks for them.
 
+CRITICAL RULES:
+1. If the User Request is NOT related to databases, SQL, or the provided Schema (e.g., asking for recipes, general knowledge, non-SQL programming), YOU MUST STRICTLY REFUSE TO ANSWER.
+2. If the request is out of scope, output EXACTLY "-- ERROR: OUT_OF_SCOPE" as the value for the "sql_query" key.
+3. Do not generate fake tables or default queries like 'SELECT * FROM users' unless explicitly requested by the user based on the schema.
+
 Database Schema:
 {relevant_schema}
 
 User Request: {user_input}
 
 Respond ONLY in valid JSON format with the following keys:
-- "sql_query": The generated SQL query string.
-- "explanation": You MUST write this explanation in the EXACT SAME LANGUAGE as the User Request. If the user writes in Arabic, this MUST be in Arabic."""
+- "sql_query": The generated SQL query string (or the exact error string if out of scope).
+- "explanation": You MUST write this explanation in the EXACT SAME LANGUAGE as the User Request. If the request is out of scope, explain briefly why you cannot answer."""
                 else:
                     prompt = f"""You are an advanced Text-to-SQL expert specialized in {sql_dialect}. 
-Write a standard SQL query for {sql_dialect} based on the request:
+Write a standard SQL query for {sql_dialect} based on the request.
+
+CRITICAL RULES:
+1. If the User Request is NOT related to databases or SQL (e.g., asking for recipes, general knowledge), YOU MUST STRICTLY REFUSE TO ANSWER.
+2. If the request is out of scope, output EXACTLY "-- ERROR: OUT_OF_SCOPE" as the value for the "sql_query" key.
 
 User Request: {user_input}
 
 Respond ONLY in valid JSON format with the following keys:
-- "sql_query": The generated SQL query string.
-- "explanation": You MUST write this explanation in the EXACT SAME LANGUAGE as the User Request. If the user writes in Arabic, this MUST be in Arabic."""
+- "sql_query": The generated SQL query string (or the exact error string if out of scope).
+- "explanation": You MUST write this explanation in the EXACT SAME LANGUAGE as the User Request. If the request is out of scope, explain briefly why you cannot answer."""
                 
                 response = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
@@ -111,8 +121,21 @@ Respond ONLY in valid JSON format with the following keys:
                 )
                 
                 result = json.loads(response.choices[0].message.content)
-                st.session_state["last_sql"] = result["sql_query"]
-                st.session_state["last_explanation"] = result.get("explanation", "")
+                
+                if "-- ERROR: OUT_OF_SCOPE" in result.get("sql_query", ""):
+                    is_arabic = any("\u0600" <= c <= "\u06FF" for c in user_input)                    
+                    if is_arabic:
+                        st.error("عفواً، هذا السؤال خارج نطاق قواعد البيانات. يرجى طرح أسئلة متعلقة بالـ Schema المتاحة أو الـ SQL فقط.")
+                    else:
+                        st.error("Sorry, this question is out of database scope. Please ask questions related to the provided Schema or SQL only.")
+                    if "last_sql" in st.session_state:
+                        del st.session_state["last_sql"]
+                    if "last_explanation" in st.session_state:
+                        del st.session_state["last_explanation"]
+                else:
+                    st.session_state["last_sql"] = result["sql_query"]
+                    st.session_state["last_explanation"] = result.get("explanation", "")
+                    
             except Exception as e:
                 st.error(f"Error: {e}")
 
@@ -186,42 +209,42 @@ if "last_sql" in st.session_state:
                 except Exception as e:
                     st.error(f"Optimization Error: {e}")
 
-st.markdown("---")
-with st.expander("💬 SQLSync Chat", expanded=False):
-    st.write("Ask the assistant for any code modifications, or request adding new conditions (like an extra JOIN or WHERE clause).")
-    
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    if chat_input := st.chat_input("Discuss the code or schema with the assistant..."):
-        st.session_state.messages.append({"role": "user", "content": chat_input})
+    st.markdown("---")
+    with st.expander("💬 SQLSync Chat", expanded=False):
+        st.write("Ask the assistant for any code modifications, or request adding new conditions (like an extra JOIN or WHERE clause).")
         
-        with st.chat_message("user"):
-            st.markdown(chat_input)
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
 
-        with st.spinner("Generating response..."):
-            try:
-                client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-                
-                chat_context = f"Current Schema:\n{schema_text}\n\nCurrent Last SQL Query:\n{st.session_state.get('last_sql', 'None')}\n\n"
-                messages_payload = [{"role": "system", "content": f"You are an expert database assistant. Always reply in the exact same language the user uses (e.g., if the user asks in Arabic, reply in Arabic; if in English, reply in English). {chat_context}"}]
-                for m in st.session_state.messages:
-                    messages_payload.append({"role": m["role"], "content": m["content"]})
-                
-                chat_response = client.chat.completions.create(
-                    messages=messages_payload,
-                    model="llama-3.3-70b-versatile",
-                    temperature=0.2
-                )
-                
-                assistant_reply = chat_response.choices[0].message.content
-                st.session_state.messages.append({"role": "assistant", "content": assistant_reply})                
-                with st.chat_message("assistant", avatar="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true"):
-                    st.write_stream(stream_data(assistant_reply))
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+        if chat_input := st.chat_input("Discuss the code or schema with the assistant..."):
+            st.session_state.messages.append({"role": "user", "content": chat_input})
+            
+            with st.chat_message("user"):
+                st.markdown(chat_input)
+
+            with st.spinner("Generating response..."):
+                try:
+                    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
                     
-            except Exception as e:
-                st.error(f"Chat Error: {e}")
+                    chat_context = f"Current Schema:\n{schema_text}\n\nCurrent Last SQL Query:\n{st.session_state.get('last_sql', 'None')}\n\n"
+                    messages_payload = [{"role": "system", "content": f"You are an expert database assistant. Always reply in the exact same language the user uses (e.g., if the user asks in Arabic, reply in Arabic; if in English, reply in English). {chat_context}"}]
+                    for m in st.session_state.messages:
+                        messages_payload.append({"role": m["role"], "content": m["content"]})
+                    
+                    chat_response = client.chat.completions.create(
+                        messages=messages_payload,
+                        model="llama-3.3-70b-versatile",
+                        temperature=0.2
+                    )
+                    
+                    assistant_reply = chat_response.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": assistant_reply})                
+                    with st.chat_message("assistant", avatar="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true"):
+                        st.write_stream(stream_data(assistant_reply))
+                        
+                except Exception as e:
+                    st.error(f"Chat Error: {e}")
