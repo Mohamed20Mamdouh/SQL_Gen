@@ -19,7 +19,7 @@ def style():
     }
     
     .stApp { background-color: #FAF8F5; max-width: 800px; margin: 0 auto; }
-    h1 { color: #D35400; text-align: left; display: flex; align-items: center; gap: 12px; font-weight: 700; }
+    h1 { color: #D35400; display: flex; justify-content: center; align-items: center; gap: 12px; font-weight: 700; }
     label { font-size: 32px !important; color: #5D4037 !important; font-weight: 600 !important; }
     .stTextInput input, .stTextArea textarea { background-color: #FFFFFF !important; border: 2px solid #F39C12 !important; border-radius: 12px !important; padding: 12px !important; box-shadow: 0 4px 12px rgba(211, 84, 0, 0.08) !important; transition: all 0.3s ease-in-out !important; }
     .stTextInput input:focus, .stTextArea textarea:focus { border-color: #D35400 !important; box-shadow: 0 4px 15px rgba(211, 84, 0, 0.2) !important; }
@@ -27,7 +27,7 @@ def style():
     .stButton button:hover { background: linear-gradient(135deg, #BA4A00, #D35400) !important; box-shadow: 0 6px 15px rgba(211, 84, 0, 0.35); }
     </style>
     
-    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true" width="90" style="vertical-align: middle;">SQLSync</h1>
+    <h1><img src="https://github.com/Mohamed20Mamdouh/SQL_Gen/blob/main/Head-Edit.png?raw=true" width="100" style="vertical-align: middle;">SQLSync</h1>
     """, unsafe_allow_html=True) 
 
 style()
